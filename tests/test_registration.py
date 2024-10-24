@@ -1,135 +1,76 @@
-import time
-
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
+from locators import (login_page_recover_password_button, main_page_make_burger_text, \
+                      register_page_register_button, register_page_error, register_page_fields, \
+                      login_page_login_button, login_page_email_field, login_page_password_field)
+from urls import register_page, main_page
 
-def test_registration(random_email, random_password):
-    driver = webdriver.Chrome()
+class TestRegistration:
 
-    driver.get('https://stellarburgers.nomoreparties.site/')
-    driver.find_element(By.LINK_TEXT, 'Личный Кабинет').click()
-    driver.find_element(By.LINK_TEXT, 'Зарегистрироваться').click()
+    def test_registration(self, setup_registration):
+        driver = setup_registration["driver"]
+        email = setup_registration["email"]
+        password = setup_registration["password"]
 
-    WebDriverWait(driver, 3).until(expected_conditions.
-                                   visibility_of_element_located((By.XPATH, '/html/body/div/div/main/div/div/p')))
+        #Ждем прогрузку страницы после клика
+        WebDriverWait(driver, 5).until(expected_conditions.element_to_be_clickable(
+            (By.XPATH, login_page_recover_password_button)))
+        #Авторизация после регистрации
+        driver.find_element(By.XPATH, login_page_email_field).send_keys(email)
+        driver.find_element(By.XPATH, login_page_password_field).send_keys(password)
+        driver.find_element(By.XPATH, login_page_login_button).click()
 
-    assert driver.current_url == 'https://stellarburgers.nomoreparties.site/register'
+        # Ждем прогрузку страницы после клика
+        WebDriverWait(driver, 5).until(expected_conditions.
+                                       element_to_be_clickable((By.XPATH, main_page_make_burger_text)))
 
-    #Заполнение данных пользователя для регистрации
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/fieldset[1]/div/div/input').send_keys('test_name')
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/fieldset[2]/div/div/input').send_keys(random_email)
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/fieldset[3]/div/div/input').send_keys(random_password)
+        #Проверка, что после авторизации есть надпись: "Соберите бургер" и находимся главной странице
+        make_a_burger = driver.find_element(By.XPATH, main_page_make_burger_text)
+        assert make_a_burger.text == 'Соберите бургер'
+        assert driver.current_url == main_page,  "Открыта не главная страница"
 
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/button').click()
+    def test_registration_using_incorrect_name(self, setup_auth_link):
+        driver = setup_auth_link["driver"]
+        email = setup_auth_link["email"]
+        password = setup_auth_link["password"]
 
-    #Ждем прогрузку страницы после клика
-    WebDriverWait(driver, 5).until(expected_conditions.element_to_be_clickable((By.XPATH,
-                                                                                      '//*[@id="root"]/div/main/div/div/p[2]/a')))
-    #Авторизация после регистрации
-    driver.find_element(By.XPATH,'/html/body/div/div/main/div/form/fieldset[1]/div/div/input').send_keys(random_email)
-    driver.find_element(By.XPATH,'//*[@id="root"]/div/main/div/form/fieldset[2]/div/div/input').send_keys(random_password)
-    driver.find_element(By.XPATH,'/html/body/div/div/main/div/form/button').click()
+        #Заполнение данных пользователя для регистрации
+        driver.find_elements(By.XPATH, register_page_fields)[0].send_keys('')
+        driver.find_elements(By.XPATH, register_page_fields)[1].send_keys(email)
+        driver.find_elements(By.XPATH, register_page_fields)[2].send_keys(password)
 
-    # Ждем прогрузку страницы после клика
-    WebDriverWait(driver, 5).until(expected_conditions.
-                                   element_to_be_clickable((By.CSS_SELECTOR, '#root > div > main > section.BurgerConstructor_basket__29Cd7.mt-25 > div > button')))
+        driver.find_element(By.XPATH, register_page_register_button).click()
 
-    #Проверка, что после авторизации есть надпись: "Соберите бургер" и находимся главной странице
-    make_a_burger = driver.find_element(By.XPATH, '/html/body/div/div/main/section[1]/h1')
-    assert make_a_burger.text == 'Соберите бургер'
-    assert driver.current_url == 'https://stellarburgers.nomoreparties.site/'
+        #Проверка, что после нажатия на "Зарегистрироваться" никуда не перекинет, тк не указано "Имя"
+        assert driver.current_url == register_page, "Открыта не страница регистрации"
 
-    driver.quit()
+    def test_registration_using_incorrect_email(self, setup_auth_link):
+        driver = setup_auth_link["driver"]
+        password = setup_auth_link["password"]
 
-def test_registration_using_incorrect_name(random_email, random_password):
-    driver = webdriver.Chrome()
+        #Заполнение данных пользователя для регистрации
+        driver.find_elements(By.XPATH, register_page_fields)[0].send_keys('test_name')
+        driver.find_elements(By.XPATH, register_page_fields)[1].send_keys('mail.mail.mail')
+        driver.find_elements(By.XPATH, register_page_fields)[2].send_keys(password)
 
-    driver.get('https://stellarburgers.nomoreparties.site/')
-    driver.find_element(By.LINK_TEXT, 'Личный Кабинет').click()
-    driver.find_element(By.LINK_TEXT, 'Зарегистрироваться').click()
+        driver.find_element(By.XPATH, register_page_register_button).click()
 
-    WebDriverWait(driver, 3).until(expected_conditions.
-                                   visibility_of_element_located((By.XPATH, '/html/body/div/div/main/div/div/p')))
+        assert driver.current_url == register_page, "Открыта не страница регистрации"
 
-    assert driver.current_url == 'https://stellarburgers.nomoreparties.site/register'
+    def test_registration_using_incorrect_password(self, setup_auth_link):
+        driver = setup_auth_link["driver"]
+        email = setup_auth_link["email"]
 
-    #Заполнение данных пользователя для регистрации
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/fieldset[1]/div/div/input').send_keys('')
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/fieldset[2]/div/div/input').send_keys(random_email)
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/fieldset[3]/div/div/input').send_keys(random_password)
+        # Заполнение данных пользователя для регистрации
+        driver.find_elements(By.XPATH, register_page_fields)[0].send_keys('test_name')
+        driver.find_elements(By.XPATH, register_page_fields)[1].send_keys(email)
+        driver.find_elements(By.XPATH, register_page_fields)[2].send_keys('four')
 
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/button').click()
+        driver.find_element(By.XPATH, register_page_register_button).click()
 
-    #Проверка, что после нажатия на "Зарегистрироваться" никуда не перекинет, тк не указано "Имя"
-    time.sleep(1)
-    assert driver.current_url == 'https://stellarburgers.nomoreparties.site/register'
+        assert driver.current_url == register_page, "Открыта не страница регистрации"
 
-    driver.quit()
-
-def test_registration_using_incorrect_email(random_email, random_password):
-    driver = webdriver.Chrome()
-
-    driver.get('https://stellarburgers.nomoreparties.site/')
-    driver.find_element(By.LINK_TEXT, 'Личный Кабинет').click()
-    driver.find_element(By.LINK_TEXT, 'Зарегистрироваться').click()
-
-    WebDriverWait(driver, 3).until(expected_conditions.
-                                   visibility_of_element_located((By.XPATH, '/html/body/div/div/main/div/div/p')))
-
-    assert driver.current_url == 'https://stellarburgers.nomoreparties.site/register'
-
-    #Заполнение данных пользователя для регистрации
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/fieldset[1]/div/div/input').send_keys('test_name')
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/fieldset[2]/div/div/input').send_keys('mail.mail.mail')
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/fieldset[3]/div/div/input').send_keys(random_password)
-
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/button').click()
-
-    assert driver.current_url == 'https://stellarburgers.nomoreparties.site/register'
-
-    driver.quit()
-
-def test_registration_using_incorrect_password(random_email, random_password):
-    driver = webdriver.Chrome()
-
-    driver.get('https://stellarburgers.nomoreparties.site/')
-    driver.find_element(By.LINK_TEXT, 'Личный Кабинет').click()
-    driver.find_element(By.LINK_TEXT, 'Зарегистрироваться').click()
-
-    WebDriverWait(driver, 3).until(expected_conditions.
-                                   visibility_of_element_located((By.XPATH, '/html/body/div/div/main/div/div/p')))
-
-    assert driver.current_url == 'https://stellarburgers.nomoreparties.site/register'
-
-    # Заполнение данных пользователя для регистрации
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/fieldset[1]/div/div/input').send_keys('test_name')
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/fieldset[2]/div/div/input').send_keys(random_email)
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/fieldset[3]/div/div/input').send_keys('four')
-
-    driver.find_element(By.XPATH,
-                        '/html/body/div/div/main/div/form/button').click()
-
-    assert driver.current_url == 'https://stellarburgers.nomoreparties.site/register'
-
-    WebDriverWait(driver, 3).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#root > div > main > div > form > fieldset:nth-child(3) > div > p')))
-    expected_message = driver.find_element(By.CSS_SELECTOR, '#root > div > main > div > form > fieldset:nth-child(3) > div > p').text
-    assert expected_message == "Некорректный пароль"
-
-    driver.quit()
+        WebDriverWait(driver, 3).until(expected_conditions.visibility_of_element_located((By.XPATH, register_page_error)))
+        expected_message = driver.find_element(By.XPATH, register_page_error).text
+        assert expected_message == "Некорректный пароль", f"Текст ошибки: {expected_message}"

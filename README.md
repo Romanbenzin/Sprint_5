@@ -1,16 +1,12 @@
-## fifth_UI_sprint
 # 5 спринт Яндекс практикума selenium
-
-
-
 ##### Запуск тестов:
 - pytest .\tests\
-#### На всех тестах стоит опция
-- --headless
-
 #### Локаторы:
-- locators
-
+- locators.py
+#### Helpers:
+-helpers.py
+#### URL:
+- urls.py
 ## Тесты:
 #### Регистрация:                                
 - tests/test_registration.py
@@ -22,5 +18,5 @@
 - tests/test_go_to_main_page.py
 #### Выход из аккаунта:
 - tests/test_logout.py
-#### Раздел «Конструктор»:
-- tests/
+#### Проверка выбора селекторов:
+- tests/test_choose_sections.py

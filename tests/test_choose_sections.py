@@ -1,27 +1,48 @@
 import time
 
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.support.wait import WebDriverWait
 
-def test_selections(random_email, random_password):
-    driver = webdriver.Chrome()
+from locators import main_page_select_sauce, main_page_select_filling, main_page_select_bun, main_page_select_sauce_up, \
+    main_page_select_bun_up, main_page_select_filling_up
+from urls import main_page
 
-    driver.get('https://stellarburgers.nomoreparties.site/')
-    #Соусы:
-    driver.find_element(By.XPATH, '/html/body/div/div/main/section[1]/div[1]/div[2]/span').click()
-    expected_value_two = driver.find_element(By.XPATH, '/html/body/div/div/main/section[1]/div[1]/div[2]').get_attribute('class')
-    assert expected_value_two == 'tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect'
 
-    # Начинки:
-    driver.find_element(By.XPATH, '/html/body/div/div/main/section[1]/div[1]/div[3]/span').click()
-    expected_value_three = driver.find_element(By.XPATH, '/html/body/div/div/main/section[1]/div[1]/div[3]').get_attribute('class')
-    assert expected_value_three == 'tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect'
+class TestSelections:
 
-    #Булки:
-    driver.find_element(By.XPATH, '/html/body/div/div/main/section[1]/div[1]/div[1]/span').click()
-    expected_value_one = driver.find_element(By.XPATH, '/html/body/div/div/main/section[1]/div[1]/div[1]').get_attribute('class')
-    assert expected_value_one == 'tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect'
 
-    driver.quit()
+    def test_selections_sauce(self, open_main_page, selected_this_one, selected_value_not_this):
+        driver = open_main_page
+
+        driver.find_element(By.XPATH, main_page_select_sauce).click()
+
+        expected_value_first_field = driver.find_element(By.XPATH, main_page_select_bun_up).get_attribute('class')
+        expected_value_second_field = driver.find_element(By.XPATH, main_page_select_sauce_up).get_attribute('class')
+        expected_value_third_field = driver.find_element(By.XPATH, main_page_select_filling_up).get_attribute('class')
+
+        assert expected_value_first_field == selected_value_not_this
+        assert expected_value_second_field == selected_this_one
+        assert expected_value_third_field == selected_value_not_this
+
+    def test_selections_filling(self, open_main_page, selected_this_one, selected_value_not_this):
+        driver = open_main_page
+
+        driver.find_element(By.XPATH, main_page_select_filling).click()
+
+        expected_value_first_field = driver.find_element(By.XPATH, main_page_select_bun_up).get_attribute('class')
+        expected_value_second_field = driver.find_element(By.XPATH, main_page_select_sauce_up).get_attribute('class')
+        expected_value_third_field = driver.find_element(By.XPATH, main_page_select_filling_up).get_attribute('class')
+
+        assert expected_value_first_field == selected_value_not_this
+        assert expected_value_second_field == selected_value_not_this
+        assert expected_value_third_field == selected_this_one
+
+    def test_selections_bun(self, open_main_page, selected_this_one, selected_value_not_this):
+        driver = open_main_page
+
+        expected_value_first_field = driver.find_element(By.XPATH, main_page_select_bun_up).get_attribute('class')
+        expected_value_second_field = driver.find_element(By.XPATH, main_page_select_sauce_up).get_attribute('class')
+        expected_value_third_field = driver.find_element(By.XPATH, main_page_select_filling_up).get_attribute('class')
+
+        assert expected_value_first_field == selected_this_one
+        assert expected_value_second_field == selected_value_not_this
+        assert expected_value_third_field == selected_value_not_this
