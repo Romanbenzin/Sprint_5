@@ -6,7 +6,6 @@ from locators import login_page_email_field, login_page_password_field, login_pa
     personal_account_exit_button
 from urls import main_page, authorization_page, profile_page
 
-
 class TestLogout:
 
     def test_go_to_main_page_logo(self, setup_registration):
