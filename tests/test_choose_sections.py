@@ -1,8 +1,14 @@
+import time
+
 from selenium.webdriver.common.by import By
-from locators import main_page_select_sauce, main_page_select_filling, main_page_select_sauce_up, \
+
+from locators import main_page_select_sauce, main_page_select_filling, main_page_select_bun, main_page_select_sauce_up, \
     main_page_select_bun_up, main_page_select_filling_up
+from urls import main_page
+
 
 class TestSelections:
+
 
     def test_selections_sauce(self, open_main_page, selected_this_one, selected_value_not_this):
         driver = open_main_page

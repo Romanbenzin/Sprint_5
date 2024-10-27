@@ -1,10 +1,12 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
+
 from conftest import setup_registration
 from locators import main_page_login_button, login_page_email_field, login_page_password_field, login_page_login_button, \
     main_page_make_burger_text, main_page_personal_account, register_page_login_button, forgot_page_login_button
 from urls import main_page, register_page, forgot_pass_page
+
 
 class TestAuthorization:
 

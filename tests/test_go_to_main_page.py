@@ -6,6 +6,7 @@ from locators import main_page_login_button, login_page_email_field, login_page_
     constructor_button, burger_logo
 from urls import main_page, profile_page
 
+
 class TestToMainPage:
 
     def test_go_to_main_page_constructor(self, setup_registration):
