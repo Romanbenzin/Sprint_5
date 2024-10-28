@@ -8,10 +8,10 @@ from urls import main_page, authorization_page, profile_page
 
 class TestLogout:
 
-    def test_go_to_main_page_logo(self, setup_registration):
-        driver = setup_registration["driver"]
-        email = setup_registration["email"]
-        password = setup_registration["password"]
+    def test_go_to_main_page_logo(self, setup_register_new_account):
+        driver = setup_register_new_account["driver"]
+        email = setup_register_new_account["email"]
+        password = setup_register_new_account["password"]
 
         # Авторизация через кнопку "Войти в аккаунт" на главной
         driver.get(main_page)
@@ -32,7 +32,7 @@ class TestLogout:
         expected_field_mail = (driver.
                                find_element(By.XPATH, personal_account_email_field).get_attribute("value"))
 
-        assert expected_field_mail == "shchetnikov_15"
+        assert expected_field_mail == "test_name"
         assert driver.current_url == profile_page
 
         driver.find_element(By.XPATH, personal_account_exit_button).click()

@@ -9,6 +9,8 @@
 -helpers.py
 #### URL:
 - urls.py
+#### data
+- data.py
 ## Тесты:
 #### Регистрация:                                
 - tests/test_registration.py
